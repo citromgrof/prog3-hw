@@ -2,13 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GUI extends ButtonActions {
+	public static JFrame frame = new JFrame("Malom");
 	public GUI() {
-		JFrame frame = new JFrame("Malom");
+
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
 		frame.setSize(screenSize);
 
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -28,28 +28,20 @@ public class GUI extends ButtonActions {
 		statisticsButton.addActionListener(statisticsListener);
 		exitButton.addActionListener(exitListener);
 
-
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		panel.add(newGameButton, gbc);
-
 		gbc.gridy = 1;
 		panel.add(Box.createRigidArea(new Dimension(0, 10)), gbc); // Add vertical spacing
-
 		gbc.gridy = 2;
 		panel.add(statisticsButton, gbc);
-
 		gbc.gridy = 3;
-		panel.add(Box.createRigidArea(new Dimension(0, 10)), gbc); // Add vertical spacing
-
+		panel.add(Box.createRigidArea(new Dimension(0, 10)), gbc);
 		gbc.gridy = 4;
 		panel.add(exitButton, gbc);
 
-
 		frame.setLocationRelativeTo(null);
-
 		frame.add(panel);
-
 		frame.setVisible(true);
 	}
 }
