@@ -20,6 +20,7 @@ public class ButtonActions {
 			panel.add(backToMainMenuButton);
 			gameFrame.add(panel);
 			ActionListener listener = new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					gameFrame.setVisible(false);
 					GUI.frame.setVisible(true);
