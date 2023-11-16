@@ -1,10 +1,12 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Board {
 	static public final int TOTAL_NUMBER_OF_PUCKS = 24;
 	static public final int TOTAL_NUMBER_OF_MILLS = 16;
-	static public final int NUMBER_OF_PUCKS_IN_MILL = 12;
+	static public final int NUMBER_OF_PUCKS_IN_MILL = 3;
 	private Position[] positions;
+	private HashMap<Position, ArrayList<Position>> neighboringPositions;
 	private HashMap<Integer, Position[]> mills;
 	private int whitePucks;
 	private int blackPucks;
@@ -13,29 +15,11 @@ public class Board {
 	public Board() {
 		positions = new Position[TOTAL_NUMBER_OF_PUCKS];
 		mills = new HashMap<>();
+		neighboringPositions=new HashMap<>();
 		whitePucks = 0;
 		blackPucks = 0;
 		pucksOnBoard = 0;
 	}
-	public Position getPositions(int index){
-		if(index<1 || index>TOTAL_NUMBER_OF_PUCKS){
-			return null;
-		}
-		return positions[index];
-	}
-	public boolean isOccupied(int index){
-		if(index<1 || index>TOTAL_NUMBER_OF_PUCKS){
-			return false;
-		}
-		return positions[index].isOccupied();
-	}
-	public void setPuckToPosition(Puck p,int index){
-		if(index<1 || index>TOTAL_NUMBER_OF_PUCKS){
-			return;
-		}
-		positions[index].setAsOccupied(p);
-	}
-
 	/*
 	 * Mindegyik tábla pozícióhoz hozzárnedli a szomszédai indexét.
 	 *
@@ -57,37 +41,77 @@ public class Board {
 		for(int i=1;i<=TOTAL_NUMBER_OF_PUCKS;i++){
 			positions[i]=new Position(i);
 		}
-		positions[1].setNeighboringPositions(2, 10);
-		positions[2].setNeighboringPositions(1, 3, 5);
-		positions[3].setNeighboringPositions(2, 15);
-		positions[4].setNeighboringPositions(5, 11);
-		positions[5].setNeighboringPositions(2, 4, 6, 8);
-		positions[6].setNeighboringPositions(5, 14);
-		positions[7].setNeighboringPositions(8, 12);
-		positions[8].setNeighboringPositions(5, 7, 9);
-		positions[9].setNeighboringPositions(8, 13);
-		positions[10].setNeighboringPositions(1, 11, 22);
-		positions[11].setNeighboringPositions(4, 10, 12, 19);
-		positions[12].setNeighboringPositions(7, 16);
-		positions[13].setNeighboringPositions(9, 14, 18);
-		positions[14].setNeighboringPositions(6, 13, 15, 21);
-		positions[15].setNeighboringPositions(3, 14, 24);
-		positions[16].setNeighboringPositions(12, 17);
-		positions[17].setNeighboringPositions(16, 18, 20);
-		positions[18].setNeighboringPositions(13, 17);
-		positions[19].setNeighboringPositions(11, 20);
-		positions[20].setNeighboringPositions(17, 19, 21, 23);
-		positions[21].setNeighboringPositions(14, 20);
-		positions[22].setNeighboringPositions(10, 23);
-		positions[23].setNeighboringPositions(20, 22, 24);
-		positions[24].setNeighboringPositions(15, 23);
+		for(int i=1;i<=TOTAL_NUMBER_OF_PUCKS;i++){
+			neighboringPositions.putIfAbsent(positions[i], new ArrayList<Position>());
+		}
+		neighboringPositions.get(positions[1]).add(positions[10]);
+		neighboringPositions.get(positions[1]).add(positions[2]);
+		neighboringPositions.get(positions[2]).add(positions[1]);
+		neighboringPositions.get(positions[2]).add(positions[3]);
+		neighboringPositions.get(positions[3]).add(positions[5]);
+		neighboringPositions.get(positions[3]).add(positions[2]);
+		neighboringPositions.get(positions[3]).add(positions[15]);
+		neighboringPositions.get(positions[4]).add(positions[5]);
+		neighboringPositions.get(positions[4]).add(positions[11]);
+		neighboringPositions.get(positions[5]).add(positions[2]);
+		neighboringPositions.get(positions[5]).add(positions[4]);
+		neighboringPositions.get(positions[5]).add(positions[6]);
+		neighboringPositions.get(positions[5]).add(positions[8]);
+		neighboringPositions.get(positions[6]).add(positions[5]);
+		neighboringPositions.get(positions[6]).add(positions[14]);
+		neighboringPositions.get(positions[7]).add(positions[8]);
+		neighboringPositions.get(positions[7]).add(positions[12]);
+		neighboringPositions.get(positions[8]).add(positions[5]);
+		neighboringPositions.get(positions[8]).add(positions[7]);
+		neighboringPositions.get(positions[8]).add(positions[9]);
+		neighboringPositions.get(positions[9]).add(positions[8]);
+		neighboringPositions.get(positions[9]).add(positions[13]);
+		neighboringPositions.get(positions[10]).add(positions[1]);
+		neighboringPositions.get(positions[10]).add(positions[11]);
+		neighboringPositions.get(positions[10]).add(positions[22]);
+		neighboringPositions.get(positions[10]).add(positions[1]);
+		neighboringPositions.get(positions[10]).add(positions[11]);
+		neighboringPositions.get(positions[10]).add(positions[22]);
+		neighboringPositions.get(positions[12]).add(positions[7]);
+		neighboringPositions.get(positions[12]).add(positions[11]);
+		neighboringPositions.get(positions[12]).add(positions[16]);
+		neighboringPositions.get(positions[13]).add(positions[9]);
+		neighboringPositions.get(positions[13]).add(positions[14]);
+		neighboringPositions.get(positions[13]).add(positions[18]);
+		neighboringPositions.get(positions[15]).add(positions[3]);
+		neighboringPositions.get(positions[15]).add(positions[14]);
+		neighboringPositions.get(positions[15]).add(positions[24]);
+		neighboringPositions.get(positions[16]).add(positions[12]);
+		neighboringPositions.get(positions[16]).add(positions[17]);
+		neighboringPositions.get(positions[17]).add(positions[16]);
+		neighboringPositions.get(positions[17]).add(positions[18]);
+		neighboringPositions.get(positions[17]).add(positions[20]);
+		neighboringPositions.get(positions[18]).add(positions[13]);
+		neighboringPositions.get(positions[18]).add(positions[17]);
+		neighboringPositions.get(positions[19]).add(positions[11]);
+		neighboringPositions.get(positions[19]).add(positions[20]);
+		neighboringPositions.get(positions[20]).add(positions[17]);
+		neighboringPositions.get(positions[20]).add(positions[19]);
+		neighboringPositions.get(positions[20]).add(positions[21]);
+		neighboringPositions.get(positions[20]).add(positions[23]);
+		neighboringPositions.get(positions[21]).add(positions[14]);
+		neighboringPositions.get(positions[21]).add(positions[20]);
+		neighboringPositions.get(positions[22]).add(positions[10]);
+		neighboringPositions.get(positions[22]).add(positions[23]);
+		neighboringPositions.get(positions[23]).add(positions[20]);
+		neighboringPositions.get(positions[23]).add(positions[22]);
+		neighboringPositions.get(positions[23]).add(positions[24]);
+		neighboringPositions.get(positions[24]).add(positions[15]);
+		neighboringPositions.get(positions[24]).add(positions[23]);
 	}
 
 	/*
 	 * 16 darab malom létezik a játékban(4-4 a külső, középső és belső négyzeteken, valamint 4 a négyzeteket összekötő részeken)
 	 * , a block mindegyik malomhoz hozzárendeli, hogy milyen pozíciók vannak benne.
 	 *  További magyarázatért nézd meg a dokumentációt.
-	 */ {
+	 */
+	{
+
 		mills.put(1, new Position[]{positions[1], positions[2], positions[3]});
 		mills.put(2, new Position[]{positions[3], positions[15], positions[24]});
 		mills.put(3, new Position[]{positions[22], positions[23], positions[24]});
@@ -104,5 +128,69 @@ public class Board {
 		mills.put(14, new Position[]{positions[10], positions[11], positions[12]});
 		mills.put(15, new Position[]{positions[13], positions[14], positions[15]});
 		mills.put(16, new Position[]{positions[17], positions[20], positions[23]});
+	}
+	public Position getPositions(int index){
+		if(index<1 || index>TOTAL_NUMBER_OF_PUCKS){
+			return null;
+		}
+		return positions[index];
+	}
+	public boolean isOccupied(int index){
+		if(index<1 || index>TOTAL_NUMBER_OF_PUCKS){
+			return false;
+		}
+		return positions[index].isOccupied();
+	}
+	public void setPuckToPosition(Puck p,int index){
+		if(index<1 || index>TOTAL_NUMBER_OF_PUCKS){
+			return;
+		}
+		positions[index].setAsOccupied(p);
+	}
+	public int incrementPucksOnBoard(){
+		return ++pucksOnBoard;
+	}
+	public int incrementPlayerPuck(Puck p){
+		if(p==Puck.BLACK){
+			return ++blackPucks;
+		}
+		if(p==Puck.WHITE){
+			return ++whitePucks;
+		}
+		return 0;
+	}
+	public int decrementPlayerPuck(Puck p){
+		if(p==Puck.BLACK){
+			return --blackPucks;
+		}
+		if(p==Puck.WHITE){
+			return --whitePucks;
+		}
+		return 0;
+	}
+	public int getNumberOfPlayerPucks(Puck p){
+		if(p==Puck.BLACK){
+			return blackPucks;
+		}
+		if(p==Puck.WHITE){
+			return whitePucks;
+		}
+		return 0;
+	}
+	public Position[] getMills(Position pos){
+		if(!mills.containsKey(pos.getPositionIndex())){
+			return null;
+		}
+		return mills.get(pos.getPositionIndex());
+	}
+	/*
+	 * Paraméterként átvett pozícióra megállapítsa, hogy szomszédos-e az aktuális pozícióval.
+	 * Ha szomszédosak true-t térít vissza, ellenkező esetben false-ot.
+	 */
+	public boolean isNeighboringPosition(Position pos1, Position pos2){
+		if(neighboringPositions.get(pos1).contains(pos2)){
+			return true;
+		}
+		return false;
 	}
 }

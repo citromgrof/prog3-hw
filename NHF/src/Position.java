@@ -9,7 +9,7 @@ public class Position {
 	private Puck occupiedByPlayer;
 	private boolean isOccupied;
 	private int positionIndex;
-	private int[] neighboringPositions;
+
 	//Inicializáláskor egy pozíció sem foglalt.
 	public Position(int position) {
 		occupiedByPlayer=Puck.NONE;
@@ -33,37 +33,5 @@ public class Position {
 		occupiedByPlayer=Puck.NONE;
 		isOccupied=false;
 	}
-	public int[] getNeighboringPositions(){
-		return neighboringPositions;
-	}
-	public void setNeighboringPositions(int pos1,int pos2){
-		neighboringPositions=new int[2];
-		neighboringPositions[0]=pos1;
-		neighboringPositions[1]=pos2;
-	}
-	public void setNeighboringPositions(int pos1,int pos2,int pos3){
-		neighboringPositions=new int[3];
-		neighboringPositions[0]=pos1;
-		neighboringPositions[1]=pos2;
-		neighboringPositions[2]=pos3;
-	}
-	public void setNeighboringPositions(int pos1,int pos2,int pos3,int pos4){
-		neighboringPositions=new int[4];
-		neighboringPositions[0]=pos1;
-		neighboringPositions[1]=pos2;
-		neighboringPositions[2]=pos3;
-		neighboringPositions[3]=pos4;
-	}
-	/*
-	* Paraméterként átvett pozícióra megállapítsa, hogy szomszédos-e az aktuális pozícióval.
-	* Ha szomszédosak true-t térít vissza, ellenkező esetben false-ot.
-	*/
-	public boolean isNeighboringPosition(int pos){
-		for(int i=0;i<neighboringPositions.length;i++){
-			if(neighboringPositions[i]==pos){
-				return true;
-			}
-		}
-		return false;
-	}
+
 }

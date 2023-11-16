@@ -1,0 +1,3 @@
+public enum Moves {
+	INVALID_MOVE,VALID_MOVE,INVALID_SRC,INVALID_DEST;
+}
