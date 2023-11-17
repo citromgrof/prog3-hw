@@ -57,7 +57,11 @@ public class Game {
 		Position pos= board.getPositions(index);
 		if(pos.getOccupiedByPlayer()!=Puck.NONE){return false;}
 		pos.setAsOccupied(player);
+		if(currentTurnColor==Puck.WHITE){
+			currentTurnColor=Puck.BLACK;
+		}else{currentTurnColor=Puck.WHITE;}
 		board.incrementPlayerPuck(player);
+		board.incrementPucksOnBoard();
 		return true;
 	}
 	

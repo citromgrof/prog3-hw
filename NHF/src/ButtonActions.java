@@ -8,7 +8,7 @@ public class ButtonActions {
 	public static ActionListener newGameListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			GUI.frame.dispose();
+			GUI.frame.setVisible(false);
 			GameFrame gameFrame = new GameFrame();
 		}
 	};

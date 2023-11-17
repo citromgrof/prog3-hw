@@ -2,93 +2,29 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class GameFrame extends ButtonActions{
 	public static JFrame gameFrame = new JFrame("Malom");
+	private static final JButton[] positionButtons = new JButton[25];
+	private static JPanel iconPanel = new JPanel();
+	private static Queue<Integer> pressedPositions=new LinkedList<>();
 	public GameFrame() {
 		gameFrame.setSize(new Dimension(1024, 768));
 		JLabel icon = new JLabel(new ImageIcon(this.getClass().getResource("/malom4.png")));
 		JButton backToMainMenuButton = new JButton("Visszalépés a főmenübe");
-		JButton pos1 = new JButton("1");
-		JButton pos2 = new JButton("2");
-		JButton pos3 = new JButton("3");
-		JButton pos4 = new JButton("4");
-		JButton pos5 = new JButton("5");
-		JButton pos6 = new JButton("6");
-		JButton pos7 = new JButton("7");
-		JButton pos8 = new JButton("8");
-		JButton pos9 = new JButton("9");
-		JButton pos10 = new JButton("10");
-		JButton pos11 = new JButton("11");
-		JButton pos12 = new JButton("12");
-		JButton pos13 = new JButton("13");
-		JButton pos14 = new JButton("14");
-		JButton pos15 = new JButton("15");
-		JButton pos16 = new JButton("16");
-		JButton pos17 = new JButton("17");
-		JButton pos18 = new JButton("18");
-		JButton pos19 = new JButton("19");
-		JButton pos20 = new JButton("20");
-		JButton pos21 = new JButton("21");
-		JButton pos22 = new JButton("22");
-		JButton pos23 = new JButton("23");
-		JButton pos24 = new JButton("24");
-		pos1.setBounds(200,57,60,60);
-		pos2.setBounds(478,57,60,60);
-		pos3.setBounds(750,57,60,60);
-		pos4.setBounds(286,147,60,60);
-		pos5.setBounds(478,147,60,60);
-		pos6.setBounds(666,147,60,60);
-		pos7.setBounds(374,230,60,60);
-		pos8.setBounds(478,230,60,60);
-		pos9.setBounds(582,230,60,60);
-		pos10.setBounds(200,337,60,60);
-		pos11.setBounds(286,337,60,60);
-		pos12.setBounds(374,337,60,60);
-		pos13.setBounds(582,337,60,60);
-		pos14.setBounds(666,337,60,60);
-		pos15.setBounds(750,337,60,60);
-		pos16.setBounds(374,444,60,60);
-		pos17.setBounds(478,444,60,60);
-		pos18.setBounds(582,444,60,60);
-		pos19.setBounds(286,527,60,60);
-		pos20.setBounds(478,527,60,60);
-		pos21.setBounds(666,527,60,60);
-		pos22.setBounds(200,610,60,60);
-		pos23.setBounds(478,610,60,60);
-		pos24.setBounds(750,610,60,60);
+		initButtonsPositions();
+		addPositionsButtonsToPanel();
+		makeButtonsInvisble();
+		addPositionButtonListeners();
 		backToMainMenuButton.addActionListener(backToMainMenuListener);
 		gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		gameFrame.setContentPane(icon);
-		JPanel iconPanel = new JPanel();
 		iconPanel.setOpaque(false);
 		iconPanel.setLayout(null);
 		iconPanel.add(backToMainMenuButton);
 		backToMainMenuButton.setBounds(0,0,170,30);
-		iconPanel.add(pos1);
-		iconPanel.add(pos2);
-		iconPanel.add(pos3);
-		iconPanel.add(pos4);
-		iconPanel.add(pos5);
-		iconPanel.add(pos6);
-		iconPanel.add(pos7);
-		iconPanel.add(pos8);
-		iconPanel.add(pos9);
-		iconPanel.add(pos10);
-		iconPanel.add(pos11);
-		iconPanel.add(pos12);
-		iconPanel.add(pos13);
-		iconPanel.add(pos14);
-		iconPanel.add(pos15);
-		iconPanel.add(pos16);
-		iconPanel.add(pos17);
-		iconPanel.add(pos18);
-		iconPanel.add(pos19);
-		iconPanel.add(pos20);
-		iconPanel.add(pos21);
-		iconPanel.add(pos22);
-		iconPanel.add(pos23);
-		iconPanel.add(pos24);
 		GUI.frame.dispose();
 		gameFrame.setBackground(new Color(189,154,122));
 		gameFrame.setLayout(new BorderLayout());
@@ -96,12 +32,78 @@ public class GameFrame extends ButtonActions{
 		gameFrame.setVisible(true);
 		gameFrame.add(iconPanel);
 	}
+	private static void newGame(){
+
+	}
+	private static void initButtonsPositions(){
+		for(int i=1;i<25;i++){
+			positionButtons[i] = new JButton();
+		}
+		positionButtons[1].setBounds(200,57,60,60);
+		positionButtons[2].setBounds(478,57,60,60);
+		positionButtons[3].setBounds(750,57,60,60);
+		positionButtons[4].setBounds(286,147,60,60);
+		positionButtons[5].setBounds(478,147,60,60);
+		positionButtons[6].setBounds(666,147,60,60);
+		positionButtons[7].setBounds(374,230,60,60);
+		positionButtons[8].setBounds(478,230,60,60);
+		positionButtons[9].setBounds(582,230,60,60);
+		positionButtons[10].setBounds(200,337,60,60);
+		positionButtons[11].setBounds(286,337,60,60);
+		positionButtons[12].setBounds(374,337,60,60);
+		positionButtons[13].setBounds(582,337,60,60);
+		positionButtons[14].setBounds(666,337,60,60);
+		positionButtons[15].setBounds(750,337,60,60);
+		positionButtons[16].setBounds(374,444,60,60);
+		positionButtons[17].setBounds(478,444,60,60);
+		positionButtons[18].setBounds(582,444,60,60);
+		positionButtons[19].setBounds(286,527,60,60);
+		positionButtons[20].setBounds(478,527,60,60);
+		positionButtons[21].setBounds(666,527,60,60);
+		positionButtons[22].setBounds(200,610,60,60);
+		positionButtons[23].setBounds(478,610,60,60);
+		positionButtons[24].setBounds(750,610,60,60);
+	}
+	private static void addPositionsButtonsToPanel(){
+		for(int i=1;i<25;i++){
+			iconPanel.add(positionButtons[i]);
+		}
+	}
+	private static void makeButtonsInvisble(){
+		for(int i=1;i<25;i++){
+			positionButtons[i].setOpaque(false);
+			positionButtons[i].setContentAreaFilled(false);
+		}
+	}
+	private static void addPositionButtonListeners(){
+		for(int i=1;i<25;i++){
+			positionButtons[i].addActionListener(positionButtonsListener);
+			positionButtons[i].putClientProperty("index", i);
+		}
+	}
+	public boolean isRunning(){
+		return gameFrame.isShowing();
+	}
+	public int getFirstPressedButton(){
+		if(pressedPositions.isEmpty()){
+			return 0;
+		}
+		return pressedPositions.poll();
+	}
 	public static ActionListener backToMainMenuListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			GUI frame = new GUI();
+			GUI.frame.setVisible(true);
 			gameFrame.setVisible(false);
 			gameFrame.dispose();
+		}
+	};
+	public static ActionListener positionButtonsListener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JButton clickedButton= (JButton) e.getSource();
+			int buttonIndex = (int) clickedButton.getClientProperty("index");
+			pressedPositions.add(buttonIndex);
 		}
 	};
 }

@@ -29,6 +29,7 @@ public class Position {
 		occupiedByPlayer=player;
 		isOccupied=true;
 	}
+
 	public void setAsUnoccupied() {
 		occupiedByPlayer=Puck.NONE;
 		isOccupied=false;
