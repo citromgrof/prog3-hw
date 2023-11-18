@@ -10,6 +10,7 @@ public class GameFrame extends ButtonActions{
 	private static final JButton[] positionButtons = new JButton[25];
 	private static JPanel iconPanel = new JPanel();
 	private static Queue<Integer> pressedPositions=new LinkedList<>();
+	private static Game game=new Game();
 	public GameFrame() {
 		gameFrame.setSize(new Dimension(1024, 768));
 		JLabel icon = new JLabel(new ImageIcon(this.getClass().getResource("/malom4.png")));
@@ -17,7 +18,6 @@ public class GameFrame extends ButtonActions{
 		initButtonsPositions();
 		addPositionsButtonsToPanel();
 		makeButtonsInvisble();
-		addPositionButtonListeners();
 		backToMainMenuButton.addActionListener(backToMainMenuListener);
 		gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		gameFrame.setContentPane(icon);
@@ -31,9 +31,20 @@ public class GameFrame extends ButtonActions{
 		gameFrame.setResizable(false);
 		gameFrame.setVisible(true);
 		gameFrame.add(iconPanel);
+		newGame();
 	}
-	private static void newGame(){
-
+	private  void newGame(){
+		addPlacePuckButtonListeners();
+	}
+	private  void changeButtonIcon(int index,Puck color){
+		if(color==Puck.WHITE){
+			positionButtons[index].setIcon(new ImageIcon(this.getClass().getResource("/feher.png")));
+		}else{
+			positionButtons[index].setIcon(new ImageIcon(this.getClass().getResource("/fekete.png")));
+		}
+		positionButtons[index].setContentAreaFilled(false);
+		positionButtons[index].setFocusPainted(false);
+		positionButtons[index].setOpaque(false);
 	}
 	private static void initButtonsPositions(){
 		for(int i=1;i<25;i++){
@@ -75,9 +86,9 @@ public class GameFrame extends ButtonActions{
 			positionButtons[i].setContentAreaFilled(false);
 		}
 	}
-	private static void addPositionButtonListeners(){
+	private  void addPlacePuckButtonListeners(){
 		for(int i=1;i<25;i++){
-			positionButtons[i].addActionListener(positionButtonsListener);
+			positionButtons[i].addActionListener(placePuckButtonListener);
 			positionButtons[i].putClientProperty("index", i);
 		}
 	}
@@ -98,12 +109,16 @@ public class GameFrame extends ButtonActions{
 			gameFrame.dispose();
 		}
 	};
-	public static ActionListener positionButtonsListener = new ActionListener() {
+	public  ActionListener placePuckButtonListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JButton clickedButton= (JButton) e.getSource();
 			int buttonIndex = (int) clickedButton.getClientProperty("index");
-			pressedPositions.add(buttonIndex);
+			Puck color=game.getCurrentTurnColor();
+			if(game.placePuck(buttonIndex,game.getCurrentTurnColor()) && game.getPhase()==Phase.PLACING) {
+				changeButtonIcon(buttonIndex,game.getCurrentTurnColor());
+			}
+
 		}
 	};
 }

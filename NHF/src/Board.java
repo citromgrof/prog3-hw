@@ -5,20 +5,20 @@ public class Board {
 	static public final int TOTAL_NUMBER_OF_PUCKS = 24;
 	static public final int TOTAL_NUMBER_OF_MILLS = 16;
 	static public final int NUMBER_OF_PUCKS_IN_MILL = 3;
-	private Position[] positions;
-	private HashMap<Position, ArrayList<Position>> neighboringPositions;
+
+	private Position[] positions=new Position[TOTAL_NUMBER_OF_PUCKS+1];
+	private HashMap<Position, ArrayList<Position>> neighboringPositions=new HashMap<>();
 	private HashMap<Integer, Position[]> mills;
 	private int whitePucks;
 	private int blackPucks;
 	private int pucksOnBoard;
 
 	public Board() {
-		positions = new Position[TOTAL_NUMBER_OF_PUCKS];
-		mills = new HashMap<>();
-		neighboringPositions=new HashMap<>();
 		whitePucks = 0;
 		blackPucks = 0;
 		pucksOnBoard = 0;
+		initializeNeighboringPositions();
+		initializeMills();
 	}
 	/*
 	 * Mindegyik tábla pozícióhoz hozzárnedli a szomszédai indexét.
@@ -37,7 +37,7 @@ public class Board {
 	 *  |                  |                  |
 	 *  22----------------23-----------------24
 	 * */
-	{
+	private void initializeNeighboringPositions(){
 		for(int i=1;i<=TOTAL_NUMBER_OF_PUCKS;i++){
 			positions[i]=new Position(i);
 		}
@@ -110,8 +110,8 @@ public class Board {
 	 * , a block mindegyik malomhoz hozzárendeli, hogy milyen pozíciók vannak benne.
 	 *  További magyarázatért nézd meg a dokumentációt.
 	 */
-	{
-
+	private  void initializeMills() {
+		mills = new HashMap<>();
 		mills.put(1, new Position[]{positions[1], positions[2], positions[3]});
 		mills.put(2, new Position[]{positions[3], positions[15], positions[24]});
 		mills.put(3, new Position[]{positions[22], positions[23], positions[24]});
@@ -192,5 +192,8 @@ public class Board {
 			return true;
 		}
 		return false;
+	}
+	public ArrayList<Position> getNeighboringPositions(int index){
+		return neighboringPositions.get(positions[index]);
 	}
 }

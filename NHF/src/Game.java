@@ -4,6 +4,7 @@ public class Game {
 	private Player black;
 	private Phase phase;
 	private Puck currentTurnColor;
+	private static int pucksPlaced=0;
 	public Game(){
 		board=new Board();
 		white=new Player(Puck.WHITE,0);
@@ -54,9 +55,13 @@ public class Game {
 		return Moves.VALID_MOVE;
 	}
 	public boolean placePuck(int index,Puck player){
-		Position pos= board.getPositions(index);
-		if(pos.getOccupiedByPlayer()!=Puck.NONE){return false;}
-		pos.setAsOccupied(player);
+		if(board.getPositions(index).getOccupiedByPlayer()!=Puck.NONE){return false;}
+		pucksPlaced++;
+		if(pucksPlaced>18){
+			phase=Phase.MOVING;
+			return false;
+		}
+		board.getPositions(index).setAsOccupied(player);
 		if(currentTurnColor==Puck.WHITE){
 			currentTurnColor=Puck.BLACK;
 		}else{currentTurnColor=Puck.WHITE;}
