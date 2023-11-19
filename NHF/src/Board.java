@@ -150,6 +150,9 @@ public class Board {
 	public int incrementPucksOnBoard(){
 		return ++pucksOnBoard;
 	}
+	public int decrementPucksOnBoard(){
+		return --pucksOnBoard;
+	}
 	public int incrementPlayerPuck(Puck p){
 		if(p==Puck.BLACK){
 			return ++blackPucks;
@@ -177,11 +180,8 @@ public class Board {
 		}
 		return 0;
 	}
-	public Position[] getMills(Position pos){
-		if(!mills.containsKey(pos.getPositionIndex())){
-			return null;
-		}
-		return mills.get(pos.getPositionIndex());
+	public Position[] getMills(int index){
+		return mills.get(index);
 	}
 	/*
 	 * Paraméterként átvett pozícióra megállapítsa, hogy szomszédos-e az aktuális pozícióval.
@@ -195,5 +195,8 @@ public class Board {
 	}
 	public ArrayList<Position> getNeighboringPositions(int index){
 		return neighboringPositions.get(positions[index]);
+	}
+	public Position[] getPositions(){
+		return positions;
 	}
 }

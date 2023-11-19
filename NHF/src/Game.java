@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Game {
 	private Board board;
 	private Player white;
@@ -36,7 +40,7 @@ public class Game {
 	public Puck getPosition(int index){
 		return board.getPositions(index).getOccupiedByPlayer();
 	}
-	public boolean isValidMove(int src,int dest){
+	private boolean isValidMove(int src,int dest){
 		Position srcPos=board.getPositions(src);
 		Position destPos=board.getPositions(dest);
 		if( board.isNeighboringPosition(srcPos, destPos) && destPos.getOccupiedByPlayer()==Puck.NONE){
@@ -69,5 +73,64 @@ public class Game {
 		board.incrementPucksOnBoard();
 		return true;
 	}
-	
+	public int isInAMill(int index){
+		Position pos=null;
+		pos=board.getPositions(index);
+		int millCntr=0;
+		for (int i=1;i<=board.TOTAL_NUMBER_OF_MILLS;i++){
+			List<Position> mill= Arrays.asList(board.getMills(i));
+			if(mill.contains(pos)){
+				int cntr=0;
+				for(Position p:mill){
+
+					if(p.getOccupiedByPlayer().equals(pos.getOccupiedByPlayer())){
+						cntr++;
+					}
+					if(cntr==3) millCntr++;
+				}
+			}
+		}
+		return millCntr;
+	}
+	public Puck getPreviousTurnColor(){
+		if(currentTurnColor==Puck.WHITE){
+			return Puck.BLACK;
+		}else{
+			return Puck.WHITE;
+		}
+	}
+	public boolean takePuck(int index,Puck player){
+		Position pos=null;
+		pos=board.getPositions(index);
+		if(pos.getOccupiedByPlayer()==Puck.NONE || pos.getOccupiedByPlayer()==player || isInAMill(index)>0){return false;}
+		pos.setAsOccupied(Puck.NONE);
+		if(player==Puck.WHITE){
+			board.decrementPlayerPuck(Puck.BLACK);
+		}else{board.decrementPlayerPuck(Puck.WHITE);}
+		board.decrementPucksOnBoard();
+		return true;
+	}
+	public boolean canColorTake(Puck color){
+		Puck otherPlayersColor;
+		int otherPlayersPucksInMills=0;
+		if(color==Puck.WHITE){
+			otherPlayersColor=Puck.BLACK;
+		}else{
+			otherPlayersColor=Puck.WHITE;
+		}
+		Position[] positions=board.getPositions();
+		for(int i=1;i<=board.TOTAL_NUMBER_OF_PUCKS;i++){
+			if(positions[i].getOccupiedByPlayer()==otherPlayersColor){
+				if(isInAMill(i)==0){
+					return true;
+				}else{
+					otherPlayersPucksInMills++;
+				}
+			}
+		}
+		if(otherPlayersPucksInMills== board.getNumberOfPlayerPucks(otherPlayersColor)){
+			return false;
+		}
+		return true;
+	}
 }

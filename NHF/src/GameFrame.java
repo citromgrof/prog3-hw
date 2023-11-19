@@ -2,15 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Stack;
 
 public class GameFrame extends ButtonActions{
 	public static JFrame gameFrame = new JFrame("Malom");
 	private static final JButton[] positionButtons = new JButton[25];
-	private static JPanel iconPanel = new JPanel();
-	private static Queue<Integer> pressedPositions=new LinkedList<>();
-	private static Game game=new Game();
+	private static final JPanel iconPanel = new JPanel();
+	private static Stack<Integer> moveStack=new Stack<>();
+	private static final Game game=new Game();
 	public GameFrame() {
 		gameFrame.setSize(new Dimension(1024, 768));
 		JLabel icon = new JLabel(new ImageIcon(this.getClass().getResource("/malom4.png")));
@@ -31,7 +30,9 @@ public class GameFrame extends ButtonActions{
 		gameFrame.setResizable(false);
 		gameFrame.setVisible(true);
 		gameFrame.add(iconPanel);
-		newGame();
+		addPlacePuckButtonListeners();
+
+		//newGame();
 	}
 	private  void newGame(){
 		addPlacePuckButtonListeners();
@@ -49,6 +50,7 @@ public class GameFrame extends ButtonActions{
 	private static void initButtonsPositions(){
 		for(int i=1;i<25;i++){
 			positionButtons[i] = new JButton();
+			positionButtons[i].putClientProperty("index", i);
 		}
 		positionButtons[1].setBounds(200,57,60,60);
 		positionButtons[2].setBounds(478,57,60,60);
@@ -86,27 +88,24 @@ public class GameFrame extends ButtonActions{
 			positionButtons[i].setContentAreaFilled(false);
 		}
 	}
+	private static void makeButtonVisible(int index){
+			positionButtons[index].setOpaque(true);
+			positionButtons[index].setContentAreaFilled(true);
+	}
 	private  void addPlacePuckButtonListeners(){
 		for(int i=1;i<25;i++){
 			positionButtons[i].addActionListener(placePuckButtonListener);
 			positionButtons[i].putClientProperty("index", i);
 		}
 	}
-	public boolean isRunning(){
-		return gameFrame.isShowing();
-	}
-	public int getFirstPressedButton(){
-		if(pressedPositions.isEmpty()){
-			return 0;
-		}
-		return pressedPositions.poll();
-	}
+
 	public static ActionListener backToMainMenuListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			GUI.frame.setVisible(true);
 			gameFrame.setVisible(false);
 			gameFrame.dispose();
+			System.exit(0);
 		}
 	};
 	public  ActionListener placePuckButtonListener = new ActionListener() {
@@ -116,8 +115,52 @@ public class GameFrame extends ButtonActions{
 			int buttonIndex = (int) clickedButton.getClientProperty("index");
 			Puck color=game.getCurrentTurnColor();
 			if(game.placePuck(buttonIndex,game.getCurrentTurnColor()) && game.getPhase()==Phase.PLACING) {
-				changeButtonIcon(buttonIndex,game.getCurrentTurnColor());
+				changeButtonIcon(buttonIndex,color);
 			}
+			int mills=game.isInAMill(buttonIndex);
+			//System.out.println(mills);
+			if(mills>0 && game.canColorTake(color)) {
+				removePlaceActionListeners();
+				addTakePuckButtonListeners();
+			}
+
+
+		}
+	};
+	public ActionListener takePuckButtonListener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			JButton clickedButton= (JButton) e.getSource();
+			int buttonIndex = (int) clickedButton.getClientProperty("index");
+			if(!game.takePuck(buttonIndex,game.getPreviousTurnColor())) {
+				return;}
+			else {
+			positionButtons[buttonIndex].setIcon(null);}
+			removeTakeActionListeners();
+			addPlacePuckButtonListeners();
+
+		}
+	};
+	private void addTakePuckButtonListeners(){
+		for(int i=1;i<25;i++){
+			positionButtons[i].addActionListener(takePuckButtonListener);
+			positionButtons[i].putClientProperty("index", i);
+		}
+	}
+	private void removePlaceActionListeners(){
+		for(int i=1;i<25;i++){
+			positionButtons[i].removeActionListener(placePuckButtonListener);
+		}
+	}
+	private void removeTakeActionListeners(){
+		for(int i=1;i<25;i++){
+			positionButtons[i].removeActionListener(takePuckButtonListener);
+		}
+	}
+	public ActionListener movePuckButtonListener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
 
 		}
 	};
