@@ -2,14 +2,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.util.Stack;
 
-public class GameFrame extends ButtonActions{
+public class GameFrame extends FileManager{
 	public static JFrame gameFrame = new JFrame("Malom");
 	private static final JButton[] positionButtons = new JButton[25];
 	private static final JPanel iconPanel = new JPanel();
 	private static Stack<Integer> moveStack=new Stack<>();
-	private static final Game game=new Game();
+	private static Game game=new Game();
 	public GameFrame() {
 		gameFrame.setSize(new Dimension(1024, 768));
 		JLabel icon = new JLabel(new ImageIcon(this.getClass().getResource("/malom4.png")));
@@ -86,6 +87,7 @@ public class GameFrame extends ButtonActions{
 		for(int i=1;i<25;i++){
 			positionButtons[i].setOpaque(false);
 			positionButtons[i].setContentAreaFilled(false);
+			positionButtons[i].setIcon(null);
 		}
 	}
 	private static void makeButtonVisible(int index){
@@ -102,10 +104,13 @@ public class GameFrame extends ButtonActions{
 	public static ActionListener backToMainMenuListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			GUI.frame.setVisible(true);
+
 			gameFrame.setVisible(false);
-			gameFrame.dispose();
-			System.exit(0);
+			makeButtonsInvisble();
+			game=new Game();
+			GUI.frame.setVisible(true);
+
+			//System.exit(0);
 		}
 	};
 	public  ActionListener placePuckButtonListener = new ActionListener() {
@@ -114,7 +119,8 @@ public class GameFrame extends ButtonActions{
 			JButton clickedButton= (JButton) e.getSource();
 			int buttonIndex = (int) clickedButton.getClientProperty("index");
 			Puck color=game.getCurrentTurnColor();
-			if(game.placePuck(buttonIndex,game.getCurrentTurnColor()) && game.getPhase()==Phase.PLACING) {
+			Phase phase=game.getPhase();
+			if(game.placePuck(buttonIndex,game.getCurrentTurnColor()) && phase==Phase.PLACING) {
 				changeButtonIcon(buttonIndex,color);
 			}
 			int mills=game.isInAMill(buttonIndex);
@@ -123,7 +129,10 @@ public class GameFrame extends ButtonActions{
 				removePlaceActionListeners();
 				addTakePuckButtonListeners();
 			}
-
+			if(game.getPhase()==Phase.MOVING) {
+				removePlaceActionListeners();
+				addMovePuckButtonListeners();
+			}
 
 		}
 	};
@@ -134,12 +143,16 @@ public class GameFrame extends ButtonActions{
 			JButton clickedButton= (JButton) e.getSource();
 			int buttonIndex = (int) clickedButton.getClientProperty("index");
 			if(!game.takePuck(buttonIndex,game.getPreviousTurnColor())) {
+
 				return;}
 			else {
 			positionButtons[buttonIndex].setIcon(null);}
 			removeTakeActionListeners();
-			addPlacePuckButtonListeners();
-
+			if(game.getPhase()==Phase.MOVING || game.getPhase()==Phase.LEAPING) {
+				addMovePuckButtonListeners();
+			}else {
+				addPlacePuckButtonListeners();
+			}
 		}
 	};
 	private void addTakePuckButtonListeners(){
@@ -161,7 +174,55 @@ public class GameFrame extends ButtonActions{
 	public ActionListener movePuckButtonListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			JButton clickedButton= (JButton) e.getSource();
+			int buttonIndex = (int) clickedButton.getClientProperty("index");
+			if(moveStack.isEmpty()) {
+				moveStack.push(buttonIndex);
+			}
+			else {
+				if(!game.isGameOver()){
+					int srcIndex=moveStack.pop();
+                    Moves moveOutput=game.makeMove(srcIndex,buttonIndex,game.getCurrentTurnColor());
+					if(moveOutput==Moves.VALID_MOVE){
+						positionButtons[srcIndex].setIcon(null);
+						changeButtonIcon(buttonIndex,game.getPreviousTurnColor());
+						int mills=game.isInAMill(buttonIndex);
+						if(mills>0 && game.canColorTake(game.getPreviousTurnColor())) {
+							removeMoveActionListeners();
+							addTakePuckButtonListeners();
+						}
+					}
+				}
+				else{
+					gameFrame.setVisible(false);
+					makeButtonsInvisble();
+					game=new Game();
+					String winner;
+					if(game.getWinner()==Puck.BLACK){
+						winner="FEKETE";
+					}
+					else if(game.getWinner()==Puck.WHITE){
+						winner="FEHÉR";
+					}else{
+						winner="DÖNTETLEN";
+					}
+					logWinner(game.getWinner());
+					GUI.textField.setText("A NYERTES: "+winner);
+					GUI.frame.setVisible(true);
+				}
+			}
 
 		}
 	};
+	private void addMovePuckButtonListeners(){
+		for(int i=1;i<25;i++){
+			positionButtons[i].addActionListener(movePuckButtonListener);
+			positionButtons[i].putClientProperty("index", i);
+		}
+	}
+	private void removeMoveActionListeners(){
+		for(int i=1;i<25;i++){
+			positionButtons[i].removeActionListener(movePuckButtonListener);
+		}
+	}
 }

@@ -48,7 +48,7 @@ public class Board {
 		neighboringPositions.get(positions[1]).add(positions[2]);
 		neighboringPositions.get(positions[2]).add(positions[1]);
 		neighboringPositions.get(positions[2]).add(positions[3]);
-		neighboringPositions.get(positions[3]).add(positions[5]);
+		neighboringPositions.get(positions[2]).add(positions[5]);
 		neighboringPositions.get(positions[3]).add(positions[2]);
 		neighboringPositions.get(positions[3]).add(positions[15]);
 		neighboringPositions.get(positions[4]).add(positions[5]);
@@ -69,15 +69,20 @@ public class Board {
 		neighboringPositions.get(positions[10]).add(positions[1]);
 		neighboringPositions.get(positions[10]).add(positions[11]);
 		neighboringPositions.get(positions[10]).add(positions[22]);
-		neighboringPositions.get(positions[10]).add(positions[1]);
-		neighboringPositions.get(positions[10]).add(positions[11]);
-		neighboringPositions.get(positions[10]).add(positions[22]);
+		neighboringPositions.get(positions[11]).add(positions[4]);
+		neighboringPositions.get(positions[11]).add(positions[10]);
+		neighboringPositions.get(positions[11]).add(positions[12]);
+		neighboringPositions.get(positions[11]).add(positions[19]);
 		neighboringPositions.get(positions[12]).add(positions[7]);
 		neighboringPositions.get(positions[12]).add(positions[11]);
 		neighboringPositions.get(positions[12]).add(positions[16]);
 		neighboringPositions.get(positions[13]).add(positions[9]);
 		neighboringPositions.get(positions[13]).add(positions[14]);
 		neighboringPositions.get(positions[13]).add(positions[18]);
+		neighboringPositions.get(positions[14]).add(positions[6]);
+		neighboringPositions.get(positions[14]).add(positions[13]);
+		neighboringPositions.get(positions[14]).add(positions[15]);
+		neighboringPositions.get(positions[14]).add(positions[21]);
 		neighboringPositions.get(positions[15]).add(positions[3]);
 		neighboringPositions.get(positions[15]).add(positions[14]);
 		neighboringPositions.get(positions[15]).add(positions[24]);
@@ -145,7 +150,10 @@ public class Board {
 		if(index<1 || index>TOTAL_NUMBER_OF_PUCKS){
 			return;
 		}
-		positions[index].setAsOccupied(p);
+		if(p==Puck.NONE){positions[index].setAsUnoccupied();}
+		else {
+			positions[index].setAsOccupied(p);
+		}
 	}
 	public int incrementPucksOnBoard(){
 		return ++pucksOnBoard;

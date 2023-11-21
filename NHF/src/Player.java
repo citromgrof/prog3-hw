@@ -20,4 +20,10 @@ public class Player {
 	public int getNumberOfPieces() {
 		return numberOfPieces;
 	}
+	public boolean getCanLeap() {
+		return canLeap;
+	}
+	public void setCanLeap(boolean canLeap) {
+		this.canLeap = canLeap;
+	}
 }
