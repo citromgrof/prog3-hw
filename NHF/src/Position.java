@@ -16,15 +16,19 @@ public class Position {
 		isOccupied=false;
 		positionIndex=position;
 	}
+
 	public Puck getOccupiedByPlayer() {
 		return occupiedByPlayer;
 	}
+
 	public boolean isOccupied(){
 		return isOccupied;
 	}
+
 	public int getPositionIndex(){
 		return positionIndex;
 	}
+
 	public void setAsOccupied(Puck player) {
 		occupiedByPlayer=player;
 		isOccupied=true;

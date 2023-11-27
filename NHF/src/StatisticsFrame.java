@@ -2,13 +2,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 
+/**
+ * Egyszerű statisztikákat jelenít meg grafikus formában,
+ * a szövegeket JLabel-ek tartalmazzák, valamint tartalmaz egyetlen gombot, amivel vissza lehet térni a főmenübe.
+ */
 public class StatisticsFrame extends FileManager{
 	public static JFrame statisticsFrame =new JFrame();
+
 	public StatisticsFrame(){
+		super("winners.txt");
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(189,154,122));
-		statisticsFrame.setBackground(new Color(189,154,122));
 		panel.setLayout(null);
 		GUI.frame.setVisible(false);
 		statisticsFrame.setVisible(true);
@@ -23,10 +29,11 @@ public class StatisticsFrame extends FileManager{
 		JLabel allGamesLabel = new JLabel("Összes játék "+getAllGames());
 		allGamesLabel.setFont(new Font("Arial", Font.BOLD, 20));
 		allGamesLabel.setBounds(0,100,300,50);
-		JLabel whiteGamesLabel = new JLabel("Fehér nyert "+getWhiteWins()+" játékot, ez a játékok "+(double) getWhiteWins()*100/getAllGames()+" százaléka");
+		final DecimalFormat df = new DecimalFormat("#.##");
+		JLabel whiteGamesLabel = new JLabel("Fehér nyert "+getWhiteWins()+" játékot, ez a játékok "+ df.format( (double) getWhiteWins()*100/getAllGames())+"%-a");
 		whiteGamesLabel.setFont(new Font("Arial", Font.BOLD, 20));
 		whiteGamesLabel.setBounds(0,150,1000,50);
-		JLabel blackGamesLabel = new JLabel("Fekete nyert "+getBlackWins()+" játékot, ez a játékok "+ (double)getBlackWins()*100/getAllGames()+" százaléka");
+		JLabel blackGamesLabel = new JLabel("Fekete nyert "+getBlackWins()+" játékot, ez a játékok "+ df.format( (double) getBlackWins()*100/getAllGames())+"%-a");
 		blackGamesLabel.setFont(new Font("Arial", Font.BOLD, 20));
 		blackGamesLabel.setBounds(0,200,1000,50);
 		JLabel drawsLabel = new JLabel("Döntetlenek: "+getDraws());
@@ -42,11 +49,13 @@ public class StatisticsFrame extends FileManager{
 		statisticsFrame.add(panel);
 		backToMainMenuButton.addActionListener(backToMainMenuListener);
 	}
+
 	public static ActionListener backToMainMenuListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			GUI.frame.setVisible(true);
 			statisticsFrame.setVisible(false);
+			statisticsFrame.dispose();
 		}
 	};
 }

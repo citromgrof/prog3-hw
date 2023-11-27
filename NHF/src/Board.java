@@ -2,41 +2,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Board {
-	static public final int TOTAL_NUMBER_OF_PUCKS = 24;
-	static public final int TOTAL_NUMBER_OF_MILLS = 16;
-	static public final int NUMBER_OF_PUCKS_IN_MILL = 3;
+	static public final int TOTAL_NUMBER_OF_PUCKS = 24; // A játéktáblán 24-pozíció van.
+	static public final int TOTAL_NUMBER_OF_MILLS = 16; // A játékban 16 féle malom kombináció létezik.
 
-	private Position[] positions=new Position[TOTAL_NUMBER_OF_PUCKS+1];
-	private HashMap<Position, ArrayList<Position>> neighboringPositions=new HashMap<>();
+	private Position[] positions;
+	private HashMap<Position, ArrayList<Position>> neighboringPositions;
 	private HashMap<Integer, Position[]> mills;
 	private int whitePucks;
 	private int blackPucks;
 	private int pucksOnBoard;
 
 	public Board() {
+		positions=new Position[TOTAL_NUMBER_OF_PUCKS+1];
+		neighboringPositions=new HashMap<>();
 		whitePucks = 0;
 		blackPucks = 0;
 		pucksOnBoard = 0;
 		initializeNeighboringPositions();
 		initializeMills();
 	}
-	/*
-	 * Mindegyik tábla pozícióhoz hozzárnedli a szomszédai indexét.
-	 *
-	 *  1------------------2------------------3
-	 *  |                  |                  |
-	 *  |      4-----------5-----------6      |
-	 *  |      |           |           |      |
-	 *  |      |     7-----8-----9     |      |
-	 *  |      |     |           |     |      |
-	 *  10----11----12           13---14-----15
-	 *  |      |     |           |     |      |
-	 *  |      |     16----17----18    |      |
-	 *  |      |           |           |      |
-	 *  |      19----------20----------21     |
-	 *  |                  |                  |
-	 *  22----------------23-----------------24
-	 * */
+
+	/**
+	 * Egy HashMap-be hozzárendeli mindegyik pozícióhoz a szomszédait egy lista formájában
+	 */
 	private void initializeNeighboringPositions(){
 		for(int i=1;i<=TOTAL_NUMBER_OF_PUCKS;i++){
 			positions[i]=new Position(i);
@@ -112,8 +100,7 @@ public class Board {
 
 	/*
 	 * 16 darab malom létezik a játékban(4-4 a külső, középső és belső négyzeteken, valamint 4 a négyzeteket összekötő részeken)
-	 * , a block mindegyik malomhoz hozzárendeli, hogy milyen pozíciók vannak benne.
-	 *  További magyarázatért nézd meg a dokumentációt.
+	 * , a függvény mindegyik malomhoz hozzárendeli, hogy milyen pozíciók vannak benne.
 	 */
 	private  void initializeMills() {
 		mills = new HashMap<>();
@@ -134,18 +121,14 @@ public class Board {
 		mills.put(15, new Position[]{positions[13], positions[14], positions[15]});
 		mills.put(16, new Position[]{positions[17], positions[20], positions[23]});
 	}
+
 	public Position getPositions(int index){
 		if(index<1 || index>TOTAL_NUMBER_OF_PUCKS){
 			return null;
 		}
 		return positions[index];
 	}
-	public boolean isOccupied(int index){
-		if(index<1 || index>TOTAL_NUMBER_OF_PUCKS){
-			return false;
-		}
-		return positions[index].isOccupied();
-	}
+
 	public void setPuckToPosition(Puck p,int index){
 		if(index<1 || index>TOTAL_NUMBER_OF_PUCKS){
 			return;
@@ -155,12 +138,19 @@ public class Board {
 			positions[index].setAsOccupied(p);
 		}
 	}
+
 	public int incrementPucksOnBoard(){
 		return ++pucksOnBoard;
 	}
+
+	public int getPucksOnBoard(){
+		return pucksOnBoard;
+	}
+
 	public int decrementPucksOnBoard(){
 		return --pucksOnBoard;
 	}
+
 	public int incrementPlayerPuck(Puck p){
 		if(p==Puck.BLACK){
 			return ++blackPucks;
@@ -170,6 +160,7 @@ public class Board {
 		}
 		return 0;
 	}
+
 	public int decrementPlayerPuck(Puck p){
 		if(p==Puck.BLACK){
 			return --blackPucks;
@@ -179,18 +170,19 @@ public class Board {
 		}
 		return 0;
 	}
+
 	public int getNumberOfPlayerPucks(Puck p){
-		if(p==Puck.BLACK){
-			return blackPucks;
-		}
-		if(p==Puck.WHITE){
-			return whitePucks;
-		}
-		return 0;
+		return switch (p) {
+			case BLACK -> blackPucks;
+			case WHITE -> whitePucks;
+			default -> 0;
+		};
 	}
+
 	public Position[] getMills(int index){
 		return mills.get(index);
 	}
+
 	/*
 	 * Paraméterként átvett pozícióra megállapítsa, hogy szomszédos-e az aktuális pozícióval.
 	 * Ha szomszédosak true-t térít vissza, ellenkező esetben false-ot.
@@ -201,9 +193,11 @@ public class Board {
 		}
 		return false;
 	}
+
 	public ArrayList<Position> getNeighboringPositions(int index){
 		return neighboringPositions.get(positions[index]);
 	}
+
 	public Position[] getPositions(){
 		return positions;
 	}

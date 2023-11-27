@@ -2,16 +2,29 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.util.Stack;
 
 public class GameFrame extends FileManager{
-	public static JFrame gameFrame = new JFrame("Malom");
-	private static final JButton[] positionButtons = new JButton[25];
-	private static final JPanel iconPanel = new JPanel();
-	private static Stack<Integer> moveStack=new Stack<>();
-	private static Game game=new Game();
+	public static JFrame gameFrame;
+	private static  JButton[] positionButtons;
+	private static JPanel iconPanel ;
+	private static Stack<Integer> moveStack;
+	private static Game game;
+
 	public GameFrame() {
+		super("winners.txt");
+		reset();
+	}
+
+	/**
+	 * Kezdőhelyzetbe hozza az ablakot.
+	 */
+	private void reset(){
+		gameFrame= new JFrame("Malom");
+		positionButtons= new JButton[25];
+		iconPanel = new JPanel();
+		game=new Game();
+		moveStack=new Stack<>();
 		gameFrame.setSize(new Dimension(1024, 768));
 		JLabel icon = new JLabel(new ImageIcon(this.getClass().getResource("/malom4.png")));
 		JButton backToMainMenuButton = new JButton("Visszalépés a főmenübe");
@@ -32,13 +45,17 @@ public class GameFrame extends FileManager{
 		gameFrame.setVisible(true);
 		gameFrame.add(iconPanel);
 		addPlacePuckButtonListeners();
+	}
 
-		//newGame();
-	}
-	private  void newGame(){
-		addPlacePuckButtonListeners();
-	}
+	/**
+	 * Az adott indexű gombnak egy képet állít be az alapján, hogy milyen korong szín lett átadva.
+	 * @param index A gomb indexe.
+	 * @param color Meghatározza, milyen képet kell beállítani.
+	 */
 	private  void changeButtonIcon(int index,Puck color){
+		if(color==Puck.NONE){
+			return;
+		}
 		if(color==Puck.WHITE){
 			positionButtons[index].setIcon(new ImageIcon(this.getClass().getResource("/feher.png")));
 		}else{
@@ -83,6 +100,7 @@ public class GameFrame extends FileManager{
 			iconPanel.add(positionButtons[i]);
 		}
 	}
+
 	private static void makeButtonsInvisble(){
 		for(int i=1;i<25;i++){
 			positionButtons[i].setOpaque(false);
@@ -90,10 +108,7 @@ public class GameFrame extends FileManager{
 			positionButtons[i].setIcon(null);
 		}
 	}
-	private static void makeButtonVisible(int index){
-			positionButtons[index].setOpaque(true);
-			positionButtons[index].setContentAreaFilled(true);
-	}
+
 	private  void addPlacePuckButtonListeners(){
 		for(int i=1;i<25;i++){
 			positionButtons[i].addActionListener(placePuckButtonListener);
@@ -101,18 +116,18 @@ public class GameFrame extends FileManager{
 		}
 	}
 
-	public static ActionListener backToMainMenuListener = new ActionListener() {
+	public ActionListener backToMainMenuListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-
-			gameFrame.setVisible(false);
-			makeButtonsInvisble();
-			game=new Game();
+			gameFrame.dispose();
 			GUI.frame.setVisible(true);
-
-			//System.exit(0);
 		}
 	};
+	/**
+	 * A játék első fázisát bonyolítsa le, a korongok lerakását. Ha változott a játék fázis akkor az annak megfelelő ActionListener-t adja hozzá a gombokhoz. Amennyiben egy korong lerakása után malom keletkezett
+	 * és a játékos aki lerakata a korongot le tud venni legalább egyet az ellenfél korngjai közül akkor
+	 * a takePuckButtonListener-t adja hozzá a gombokhoz.
+	 */
 	public  ActionListener placePuckButtonListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -124,7 +139,6 @@ public class GameFrame extends FileManager{
 				changeButtonIcon(buttonIndex,color);
 			}
 			int mills=game.isInAMill(buttonIndex);
-			//System.out.println(mills);
 			if(mills>0 && game.canColorTake(color)) {
 				removePlaceActionListeners();
 				addTakePuckButtonListeners();
@@ -136,6 +150,11 @@ public class GameFrame extends FileManager{
 
 		}
 	};
+	/**
+	 * A lenyomott gombnak megfelelő korngot leveszi a tábláról, ha az lehetseges.
+	 * Ha a művelettel a játek veget ert akkor elmenti a nyertes, valamint visszatér a főmenübe
+	 * és kiírja a nyertes játékos színét, különben az aktuális fázis ActionListener-ét rendeli hozzá a gombokhoz.
+	 */
 	public ActionListener takePuckButtonListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -143,10 +162,27 @@ public class GameFrame extends FileManager{
 			JButton clickedButton= (JButton) e.getSource();
 			int buttonIndex = (int) clickedButton.getClientProperty("index");
 			if(!game.takePuck(buttonIndex,game.getPreviousTurnColor())) {
-
 				return;}
 			else {
 			positionButtons[buttonIndex].setIcon(null);}
+
+			if(game.isGameOver() && game.getPhase()!=Phase.PLACING) {
+				gameFrame.setVisible(false);
+				makeButtonsInvisble();
+				String winner;
+				if(game.getWinner()==Puck.BLACK){
+					winner="A NYERTES FEKETE";
+				}
+				else if(game.getWinner()==Puck.WHITE){
+					winner="A NYERTES FEHÉR";
+				}else{
+					winner="DÖNTETLEN";
+				}
+				logWinner(game.getWinner(),"winners.txt");
+				GUI.textField.setText(winner);
+				GUI.frame.setVisible(true);
+				game=new Game();
+			}
 			removeTakeActionListeners();
 			if(game.getPhase()==Phase.MOVING || game.getPhase()==Phase.LEAPING) {
 				addMovePuckButtonListeners();
@@ -171,6 +207,13 @@ public class GameFrame extends FileManager{
 			positionButtons[i].removeActionListener(takePuckButtonListener);
 		}
 	}
+
+	/**
+	 * A korongok mozgatását bonyolítsa le. Mivel egy korong mozgatásához két gomb lenyomása szükséges,
+	 * ezért az első gomb indexét egy stack-be rakja, ez lesz az a korong, amit el szeretnénk elmozgatni,
+	 * a második gombnyomás lesz az a pozíció ahová szeretnénk mozgatni a korongot.
+	 * Ha érvényes a lépés a kezdőpont gombját láthatatlanná teszi és a végpontot, pedig annak a játékosnak a színére állítsa aki megtette a lépést.
+	 */
 	public ActionListener movePuckButtonListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -196,19 +239,19 @@ public class GameFrame extends FileManager{
 				else{
 					gameFrame.setVisible(false);
 					makeButtonsInvisble();
-					game=new Game();
 					String winner;
 					if(game.getWinner()==Puck.BLACK){
-						winner="FEKETE";
+						winner="A NYERTES FEKETE";
 					}
 					else if(game.getWinner()==Puck.WHITE){
-						winner="FEHÉR";
+						winner="A NYERTES FEHÉR";
 					}else{
 						winner="DÖNTETLEN";
 					}
-					logWinner(game.getWinner());
-					GUI.textField.setText("A NYERTES: "+winner);
+					logWinner(game.getWinner(),"winners.txt");
+					GUI.textField.setText(winner);
 					GUI.frame.setVisible(true);
+					game=new Game();
 				}
 			}
 

@@ -3,13 +3,13 @@ import java.awt.*;
 
 public class GUI extends ButtonActions {
 	public static JFrame frame = new JFrame("Malom");
-	public static JTextField textField = new JTextField();
+	public static JLabel textField = new JLabel();
+
 	public GUI() {
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBackground(new Color(189,154,122));
 		textField.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-		textField.setEditable(false);
 		textField.setPreferredSize(new Dimension(200,50));
 		textField.setFont(new Font("Arial", Font.BOLD, 20));
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
